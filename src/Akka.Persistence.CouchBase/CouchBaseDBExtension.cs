@@ -68,7 +68,7 @@ namespace Akka.Persistence.CouchBase
                         Name = JournalSettings.BucketName,
                         SaslPassword = JournalSettings.CBClientConfiguration.BucketConfigs[JournalSettings.BucketName].Password,
                         BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
-                    });
+                    }).Wait();
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace Akka.Persistence.CouchBase
                         Name = SnapShotStoreSettings.BucketName,
                         SaslPassword = SnapShotStoreSettings.CBClientConfiguration.BucketConfigs[SnapShotStoreSettings.BucketName].Password,
                         BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
-                    });
+                    }).Wait();
                 }
                 else
                 {

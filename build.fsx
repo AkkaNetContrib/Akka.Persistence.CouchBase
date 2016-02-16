@@ -18,11 +18,11 @@ cd __SOURCE_DIRECTORY__
 
 
 let product = "Akka.NET"
-let authors = [ "Akka.NET Team" ]
-let copyright = "Copyright © 2013-2015 Akka.NET Team"
-let company = "Akka.NET Team"
+let authors = [ "CoralFire/Akka.NET Teams" ]
+let copyright = "Copyright © 2016 CoralFire Team"
+let company = "CoralFire"
 let description = "Akka.NET is a port of the popular Java/Scala framework Akka to .NET"
-let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency"]
+let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"persistence";"Couchbase"]
 let configuration = "Release"
 
 // Read release notes and version
@@ -52,7 +52,7 @@ let nugetDir = binDir @@ "nuget"
 let workingDir = binDir @@ "build"
 let libDir = workingDir @@ @"lib\net45\"
 let nugetExe = FullName @"src\.nuget\NuGet.exe"
-let slnFile = "./src/Akka.Persistence.MongoDb.sln"
+let slnFile = "./src/Akka.Persistence.CouchBase.sln"
 
 open Fake.RestorePackageHelper
 Target "RestorePackages" (fun _ -> 
@@ -103,7 +103,7 @@ Target "CopyOutput" <| fun _ ->
         let src = "src" @@ project @@ @"bin/Release/"
         let dst = binDir @@ project
         CopyDir dst src allFiles
-    [ "Akka.Persistence.MongoDb"
+    [ "Akka.Persistence.CouchBase"
       ]
     |> List.iter copyOutput
 
@@ -169,8 +169,8 @@ let updateNugetPackages _ =
 
   let getPackages project =
     match project with
-    | "Akka.Persistence.MongoDb" -> ["Akka.Persistence";]
-    | "Akka.Persistence.MongoDb.Tests" -> ["Akka.Persistence.TestKit";]
+    | "Akka.Persistence.CouchBase" -> ["Akka.Persistence";]
+    | "Akka.Persistence.CouchBase.Tests" -> ["Akka.Persistence.TestKit";]
     | _ -> []
 
   for projectFile in !! "src/**/*.csproj" do
