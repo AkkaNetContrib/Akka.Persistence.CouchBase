@@ -85,12 +85,14 @@ namespace Akka.Persistence.CouchBase.Journal
 
         async private Task WriteMessagesTask(IEnumerable<IPersistentRepresentation> messages)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 foreach (IPersistentRepresentation m in messages)
                 {
                     Document<JournalEntry> jED = ToJournalEntry(m);
-                    _CBBucket.InsertAsync<JournalEntry>(jED);
+                    Task<IDocumentResult<JournalEntry>> ia = _CBBucket.InsertAsync<JournalEntry>(jED);
+                    IDocumentResult<JournalEntry> dr = await ia;
+                    string test = "Yo: " + dr.ToString();
 
                 }
             });

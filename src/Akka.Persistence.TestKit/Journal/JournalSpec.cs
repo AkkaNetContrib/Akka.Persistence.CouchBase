@@ -81,7 +81,7 @@ namespace Akka.Persistence.TestKit.Journal
 
             Journal.Tell(new WriteMessages(messages, probe.Ref, ActorInstanceId));
 
-            probe.ExpectMsg<WriteMessagesSuccessful>(TimeSpan.FromSeconds(10));
+            probe.ExpectMsg<WriteMessagesSuccessful>(TimeSpan.FromMinutes(10));
             for (int i = from; i <= to; i++)
             {
                 var n = i;

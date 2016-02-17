@@ -114,8 +114,7 @@ namespace Akka.Persistence.CouchBase
             SnapShotStoreSettings = new CouchbaseSnapshotSettings(HOCON_CB_SnapshotConfig);
 
             // Are we using the same cluster as the journal?
-            if( SnapShotStoreSettings.CBClientConfiguration.Servers.All(JournalSettings.CBClientConfiguration.Servers.Contains) &&
-                SnapShotStoreSettings.CBClientConfiguration.Servers.Count == JournalSettings.CBClientConfiguration.Servers.Count)
+            if( SnapShotStoreSettings.CBClientConfiguration.Servers.All(JournalSettings.CBClientConfiguration.Servers.Contains))
             {
                 SnapShotStoreCBCluster = JournalCBCluster;
                 
