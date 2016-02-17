@@ -7,14 +7,16 @@ using Couchbase.Core.Serialization;
 using Couchbase.Management;
 using Newtonsoft.Json;
 
-namespace Akka.Persistence.MongoDb.Tests
+namespace Akka.Persistence.CouchBase.Tests
 {
     public class CouchBaseSnapshotStoreSpec : SnapshotStoreSpec
     {
         private static readonly string SpecConfig = @"
             akka.persistence{
 	            journal{
-		            couchdb:{
+                    plugin = ""akka.persistence.journal.couchbase""
+		            couchbase:{
+                        class = ""Akka.Persistence.CouchBase.Journal.CouchBaseDbJournal, Akka.Persistence.CouchBase""
                         ServersURI:[
                         ""http://127.0.0.1:8091""
                         ],
@@ -31,7 +33,9 @@ namespace Akka.Persistence.MongoDb.Tests
 	            }
 
 	            snapshot-store{
-		            couchdb:{
+                    plugin = ""akka.persistence.snapshot-store.couchbase""
+		            couchbase:{
+                        class = ""Akka.Persistence.CouchBase.Snapshot.CouchBaseDbSnapshotStore, Akka.Persistence.CouchBase""
                         ServersURI:[
                         ""http://127.0.0.1:8091""
                         ],
@@ -51,7 +55,7 @@ namespace Akka.Persistence.MongoDb.Tests
         ";
 
 
-        public CouchBaseSnapshotStoreSpec() : base(CreateSpecConfig(), "MongoDbSnapshotStoreSpec")
+        public CouchBaseSnapshotStoreSpec() : base(CreateSpecConfig(), "CouchBaseSnapshotStoreSpec")
         {
             Initialize();
         }
@@ -63,18 +67,18 @@ namespace Akka.Persistence.MongoDb.Tests
 
         protected override void Dispose(bool disposing)
         {
-            ClientConfiguration CBClientConfiguration;
-            CBClientConfiguration = new ClientConfiguration();
+            //ClientConfiguration CBClientConfiguration;
+            //CBClientConfiguration = new ClientConfiguration();
 
-            // Reset the serializers and deserializers so that JSON is stored as PascalCase instead of camelCase
-            CBClientConfiguration.Serializer = () => new DefaultSerializer(new JsonSerializerSettings(), new JsonSerializerSettings());
+            //// Reset the serializers and deserializers so that JSON is stored as PascalCase instead of camelCase
+            //CBClientConfiguration.Serializer = () => new DefaultSerializer(new JsonSerializerSettings(), new JsonSerializerSettings());
 
-            CBClientConfiguration.Servers.Add(new Uri("http://127.0.0.1:8091"));
+            //CBClientConfiguration.Servers.Add(new Uri("http://127.0.0.1:8091"));
 
-            CBClientConfiguration.UseSsl = false;
-            Cluster testCluster = new Cluster(CBClientConfiguration);
+            //CBClientConfiguration.UseSsl = false;
+            //Cluster testCluster = new Cluster(CBClientConfiguration);
 
-            testCluster.CreateManager("Administrator", "newuser").RemoveBucket("testakka");
+            //testCluster.CreateManager("Administrator", "newuser").RemoveBucket("testakka");
 
             base.Dispose(disposing);
         }

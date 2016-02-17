@@ -13,14 +13,19 @@ namespace Akka.Persistence.CouchBase
         public ClientConfiguration CBClientConfiguration { get; private set; }
         public string BucketName { get; private set; }
 
-        public string AdminUserName { get; private set; }
+        // Not needed since we are not generating a bucket on the fly.
+        //public string AdminUserName { get; private set; }
 
-        public string AdminPassword { get; private set; }
+        //public string AdminPassword { get; private set; }
 
 
 
 
-        public CouchDBSettings(Config config)
+        public CouchDBSettings()
+        {
+        }
+
+        protected void CreateCouchBaseDBClientConfiguration(Config config)
         {
             CBClientConfiguration = new ClientConfiguration();
 
@@ -48,6 +53,11 @@ namespace Akka.Persistence.CouchBase
             // Use SSL?
             CBClientConfiguration.UseSsl = config.GetBoolean("UseSSL");
 
+            // This will not be needed since we are not creating a bucket on the fly.
+            //AdminPassword = config.GetString("AdminPassword");
+            //AdminUserName = config.GetString("AdminUserName");
+
+
             // Get the bucket(s) configuration
             Dictionary<string, BucketConfiguration> BucketConfigs = new Dictionary<string, BucketConfiguration>();
             BucketConfiguration newBC = new BucketConfiguration();
@@ -55,10 +65,6 @@ namespace Akka.Persistence.CouchBase
 
             newBC.UseSsl = config.GetBoolean("BucketUseSSL");
             newBC.Password = config.GetString("Password");
-            AdminPassword = config.GetString("AdminPassword");
-            newBC.Password = AdminPassword;
-            AdminUserName = config.GetString("AdminUserName");
-            newBC.Password = AdminUserName;
             newBC.DefaultOperationLifespan = (uint)config.GetInt("DefaultOperationLifespan");
             BucketName = config.GetString("BucketName");
             newBC.BucketName = BucketName;
@@ -79,22 +85,25 @@ namespace Akka.Persistence.CouchBase
     public class CouchBaseJournalSettings : CouchDBSettings
     {
         public CouchBaseJournalSettings(Config config)
-            : base(config)
         {
             if (config == null)
                 throw new ArgumentNullException("config",
                     "CoucBase journal settings cannot be initialized, because required HOCON section couldn't been found");
+            CreateCouchBaseDBClientConfiguration(config);
+
         }
 
     }
     public class CouchbaseSnapshotSettings : CouchDBSettings
     {
         public CouchbaseSnapshotSettings(Config config)
-            : base(config)
         {
             if (config == null)
                 throw new ArgumentNullException("config",
                     "CoucBase snapshot settings cannot be initialized, because required HOCON section couldn't been found");
+            CreateCouchBaseDBClientConfiguration(config);
+
         }
+
     }
 }

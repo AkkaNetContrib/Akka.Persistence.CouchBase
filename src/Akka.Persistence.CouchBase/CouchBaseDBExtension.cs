@@ -45,35 +45,38 @@ namespace Akka.Persistence.CouchBase
             // Initialize fallback configuration defaults
             system.Settings.InjectTopLevelFallback(CouchBaseDBPersistence.DefaultConfiguration());
 
-            var HOCON_CB_JournalConfig = system.Settings.Config.GetConfig("akka.persistence.journal.couchdb");
+            var HOCON_CB_JournalConfig = system.Settings.Config.GetConfig("akka.persistence.journal.couchbase");
             JournalSettings = new CouchBaseJournalSettings(HOCON_CB_JournalConfig);
 
             // Instantiate the connection to the cluster
             using (JournalCBCluster = new Cluster(JournalSettings.CBClientConfiguration))
             {
                 //Open the bucket and make a reference to the CB Client Configuration
-                JournalCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket();
+                JournalCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(JournalSettings.BucketName);
             }
 
             // Throw an exception if we reach this point without a CB Cluster, CB Config, or Bucket
             if (JournalCBCluster == null)
                 throw new Exception("CouchBase Journal Cluster could not initialized.");
-            if (JournalCBBucket == null)
+            if (JournalCBBucket.Name!=JournalSettings.BucketName)
             {
-                if(JournalSettings.AdminUserName != null && JournalSettings.AdminPassword != null)
-                {
-                    // Instantiate the bucket
-                    var provisioner = new ClusterProvisioner(JournalCBCluster,JournalSettings.AdminPassword,JournalSettings.AdminUserName);
-                    provisioner.ProvisionBucketAsync(new BucketSettings{
-                        Name = JournalSettings.BucketName,
-                        SaslPassword = JournalSettings.CBClientConfiguration.BucketConfigs[JournalSettings.BucketName].Password,
-                        BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
-                    }).Wait();
-                }
-                else
-                {
+                // This was a bad idea.  Creating a bucket on the fly takes tooooooo long.
+                // Plus the Cluster Provisioner has the user name and password parameters out of order.
+                // Like Donald Trump says "Bad!!!!"
+                //if(JournalSettings.AdminUserName != null && JournalSettings.AdminPassword != null)
+                //{
+                //    // Instantiate the bucket
+                //    var provisioner = new ClusterProvisioner(JournalCBCluster,JournalSettings.AdminUserName,JournalSettings.AdminPassword);
+                //    provisioner.ProvisionBucketAsync(new BucketSettings{
+                //        Name = JournalSettings.BucketName,
+                //        SaslPassword = JournalSettings.CBClientConfiguration.BucketConfigs[JournalSettings.BucketName].Password,
+                //        BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
+                //    }).Wait();
+                //}
+                //else
+                //{
                     throw new Exception("CouchBase Journal bucket could not initialized.");
-                }
+                //}
             }
 
 
@@ -86,28 +89,28 @@ namespace Akka.Persistence.CouchBase
             // CREATE INDEX idxDocumentType_PersistenceId_SequenceNr on `SSA` (PersistenceId,SequenceNr,DocumentType) USING GSI
             // CREATE INDEX idxDocumentType_PersistenceId on `SSA` (DocumentType,PersistenceId) USING GSI
 
-            string N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_SequenceNr'";
-            var result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-            if (result.Rows.Count == 0 && result.Success == true)
-            {
-                N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_SequenceNr on `" + JournalCBBucket.Name + "` (PersistenceId,SequenceNr,DocumentType) USING GSI";
-                result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-                //if (result.Success != true)
-                //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_SequenceNr");
-            }
-            N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId";
-            result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-            if (result.Rows.Count == 0 && result.Success == true)
-            {
-                N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId on `" + JournalCBBucket.Name + "` (PersistenceId,DocumentType) USING GSI";
-                result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-                //if (result.Success != true)
-                //    Debug.Write("Could not create index:idxDocumentType_PersistenceId");
-            }
+            //string N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_SequenceNr'";
+            //var result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
+            //if (result.Rows.Count == 0 && result.Success == true)
+            //{
+            //    N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_SequenceNr on `" + JournalCBBucket.Name + "` (PersistenceId,SequenceNr,DocumentType) USING GSI";
+            //    result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
+            //    //if (result.Success != true)
+            //    //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_SequenceNr");
+            //}
+            //N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId";
+            //result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
+            //if (result.Rows.Count == 0 && result.Success == true)
+            //{
+            //    N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId on `" + JournalCBBucket.Name + "` (PersistenceId,DocumentType) USING GSI";
+            //    result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
+            //    //if (result.Success != true)
+            //    //    Debug.Write("Could not create index:idxDocumentType_PersistenceId");
+            //}
 
 
 
-            var HOCON_CB_SnapshotConfig = system.Settings.Config.GetConfig("akka.persistence.snapshot.couchdb");
+            var HOCON_CB_SnapshotConfig = system.Settings.Config.GetConfig("akka.persistence.snapshot-store.couchbase");
             SnapShotStoreSettings = new CouchbaseSnapshotSettings(HOCON_CB_SnapshotConfig);
 
             // Are we using the same cluster as the journal?
@@ -128,7 +131,7 @@ namespace Akka.Persistence.CouchBase
                 using (SnapShotStoreCBCluster = new Cluster(SnapShotStoreSettings.CBClientConfiguration))
                 {
                     //Open the bucket and make a reference to the CB Client Configuration
-                    SnapShotStoreCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket();
+                    SnapShotStoreCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(SnapShotStoreSettings.BucketName);
                 }
             }
 
@@ -137,20 +140,23 @@ namespace Akka.Persistence.CouchBase
                 throw new Exception("CouchBase Snapshot Store Cluster could not initialized.");
             if (SnapShotStoreCBBucket == null)
             {
-                if(SnapShotStoreSettings.AdminUserName != null && SnapShotStoreSettings.AdminPassword != null)
-                {
-                    // Instantiate the bucket
-                    var provisioner = new ClusterProvisioner(JournalCBCluster,SnapShotStoreSettings.AdminPassword,SnapShotStoreSettings.AdminUserName);
-                    provisioner.ProvisionBucketAsync(new BucketSettings{
-                        Name = SnapShotStoreSettings.BucketName,
-                        SaslPassword = SnapShotStoreSettings.CBClientConfiguration.BucketConfigs[SnapShotStoreSettings.BucketName].Password,
-                        BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
-                    }).Wait();
-                }
-                else
-                {
+                // This was a bad idea.  Creating a bucket on the fly takes tooooooo long.
+                // Plus the Cluster Provisioner has the user name and password parameters out of order.
+                // Like Donald Trump says "Bad!!!!"
+                //if(SnapShotStoreSettings.AdminUserName != null && SnapShotStoreSettings.AdminPassword != null)
+                //{
+                //    // Instantiate the bucket
+                //    var provisioner = new ClusterProvisioner(JournalCBCluster,SnapShotStoreSettings.AdminPassword,SnapShotStoreSettings.AdminUserName);
+                //    provisioner.ProvisionBucketAsync(new BucketSettings{
+                //        Name = SnapShotStoreSettings.BucketName,
+                //        SaslPassword = SnapShotStoreSettings.CBClientConfiguration.BucketConfigs[SnapShotStoreSettings.BucketName].Password,
+                //        BucketType = Couchbase.Core.Buckets.BucketTypeEnum.Couchbase,
+                //    }).Wait();
+                //}
+                //else
+                //{
                     throw new Exception("CouchBase Snapshot Store bucket could not initialized.");
-                }
+                //}
             }
 
             // Add Snapshot indexes
@@ -164,33 +170,33 @@ namespace Akka.Persistence.CouchBase
             // CREATE INDEX idxDocumentType_PersistenceId_Timestamp on `SSA` (PersistenceId,Timestamp,DocumentType) USING GSI
             // CREATE INDEX idxDocumentType_PersistenceId on `SSA` (DocumentType,PersistenceId) USING GSI
 
-            N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_SequenceNr'";
-            result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-            if (result.Rows.Count == 0 && result.Success == true)
-            {
-                N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_SequenceNr on `" + JournalCBBucket.Name + "` (PersistenceId,SequenceNr,DocumentType) USING GSI";
-                result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-                //if (result.Success != true)
-                //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_SequenceNr");
-            }
-            N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_Timestamp";
-            result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-            if (result.Rows.Count == 0 && result.Success == true)
-            {
-                N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_Timestamp on `" + JournalCBBucket.Name + "` (PersistenceId,Timestamp,DocumentType) USING GSI";
-                result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-                //if (result.Success != true)
-                //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_Timestamp");
-            }
-            N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_Timestamp";
-            result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-            if (result.Rows.Count == 0 && result.Success == true)
-            {
-                N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId on `" + JournalCBBucket.Name + "` (DocumentType,PersistenceId) USING GSI";
-                result = JournalCBBucket.Query<dynamic>(N1QLQueryString);
-                //if (result.Success != true)
-                //    Debug.Write("Could not create index:idxDocumentType_PersistenceId");
-            }
+            //N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_SequenceNr'";
+            //result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //if (result.Rows.Count == 0 && result.Success == true)
+            //{
+            //    N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_SequenceNr on `" + SnapShotStoreCBBucket.Name + "` (PersistenceId,SequenceNr,DocumentType) USING GSI";
+            //    result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //    //if (result.Success != true)
+            //    //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_SequenceNr");
+            //}
+            //N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_Timestamp";
+            //result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //if (result.Rows.Count == 0 && result.Success == true)
+            //{
+            //    N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId_Timestamp on `" + SnapShotStoreCBBucket.Name + "` (PersistenceId,Timestamp,DocumentType) USING GSI";
+            //    result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //    //if (result.Success != true)
+            //    //    Debug.Write("Could not create index:idxDocumentType_PersistenceId_Timestamp");
+            //}
+            //N1QLQueryString = "SELECT * FROM system:indexes WHERE name = 'idxDocumentType_PersistenceId_Timestamp";
+            //result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //if (result.Rows.Count == 0 && result.Success == true)
+            //{
+            //    N1QLQueryString = "CREATE INDEX idxDocumentType_PersistenceId on `" + SnapShotStoreCBBucket.Name + "` (DocumentType,PersistenceId) USING GSI";
+            //    result = SnapShotStoreCBBucket.Query<dynamic>(N1QLQueryString);
+            //    //if (result.Success != true)
+            //    //    Debug.Write("Could not create index:idxDocumentType_PersistenceId");
+            //}
         }
 
 

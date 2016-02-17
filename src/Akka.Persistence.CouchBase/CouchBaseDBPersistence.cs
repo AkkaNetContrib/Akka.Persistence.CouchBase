@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Configuration;
+using System.Reflection;
+using System.IO;
+using System.Diagnostics;
 
 namespace Akka.Persistence.CouchBase
 {
@@ -23,7 +26,7 @@ namespace Akka.Persistence.CouchBase
         /// </summary>
         /// <returns>Akka Configuration</returns>
         public static Config DefaultConfiguration(){
-            return ConfigurationFactory.FromResource<CouchBaseDBPersistence>("Akka.Persistance.CouchBase.reference.conf");
+            return ConfigurationFactory.FromResource<CouchBaseDBPersistence>("Akka.Persistence.CouchBase.reference.conf");
         }
 
         /// <summary>
@@ -35,7 +38,6 @@ namespace Akka.Persistence.CouchBase
         {
             return new CouchBaseDBExtension(system);
         }
-
 
     }
 }

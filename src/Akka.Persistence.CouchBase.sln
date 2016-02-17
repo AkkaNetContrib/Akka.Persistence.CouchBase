@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D645B19F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase", "Akka.Persistence.CouchBase\Akka.Persistence.CouchBase.csproj", "{BE780448-5485-4CD0-8D35-E635916D5E20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D464B988-D36A-4F28-B40F-E2A1AEEFE61D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget.restoreme", "nuget.restoreme", "{D464B988-D36A-4F28-B40F-E2A1AEEFE61D}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
@@ -20,6 +20,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D464B9
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase.Tests", "Akka.Persistence.CouchBase.Tests\Akka.Persistence.CouchBase.Tests.csproj", "{32A2ACBE-8A3C-4093-8C13-D65B113B3327}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.TestKit", "Akka.Persistence.TestKit\Akka.Persistence.TestKit.csproj", "{AD9418B6-C452-4169-94FB-D43DE0BFA966}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C245F3C-2E50-47B5-BA92-354B26CCDE72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.TestKit.Tests", "Akka.Persistence.TestKit.Tests\Akka.Persistence.TestKit.Tests.csproj", "{E6CDDAC1-BD68-4C7B-9E6D-569AC6D50793}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EC33AFF9-3D69-4DF3-A029-A75D64573963}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +48,14 @@ Global
 		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6CDDAC1-BD68-4C7B-9E6D-569AC6D50793}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6CDDAC1-BD68-4C7B-9E6D-569AC6D50793}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6CDDAC1-BD68-4C7B-9E6D-569AC6D50793}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6CDDAC1-BD68-4C7B-9E6D-569AC6D50793}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
