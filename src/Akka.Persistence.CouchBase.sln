@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D645B19F-9B6C-4482-A95F-51117E2C6C61}"
+	ProjectSection(SolutionItems) = preProject
+		..\build.cmd = ..\build.cmd
+		..\build.fsx = ..\build.fsx
+		..\build.sh = ..\build.sh
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase", "Akka.Persistence.CouchBase\Akka.Persistence.CouchBase.csproj", "{BE780448-5485-4CD0-8D35-E635916D5E20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D464B988-D36A-4F28-B40F-E2A1AEEFE61D}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase.Tests", "Akka.Persistence.CouchBase.Tests\Akka.Persistence.CouchBase.Tests.csproj", "{32A2ACBE-8A3C-4093-8C13-D65B113B3327}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE780448-5485-4CD0-8D35-E635916D5E20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE780448-5485-4CD0-8D35-E635916D5E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE780448-5485-4CD0-8D35-E635916D5E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE780448-5485-4CD0-8D35-E635916D5E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32A2ACBE-8A3C-4093-8C13-D65B113B3327}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
