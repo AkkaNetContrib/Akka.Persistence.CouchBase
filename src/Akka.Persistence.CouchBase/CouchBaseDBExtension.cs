@@ -49,11 +49,10 @@ namespace Akka.Persistence.CouchBase
             JournalSettings = new CouchBaseJournalSettings(HOCON_CB_JournalConfig);
 
             // Instantiate the connection to the cluster
-            using (JournalCBCluster = new Cluster(JournalSettings.CBClientConfiguration))
-            {
-                //Open the bucket and make a reference to the CB Client Configuration
-                JournalCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(JournalSettings.BucketName);
-            }
+            JournalCBCluster = new Cluster(JournalSettings.CBClientConfiguration);
+
+            //Open the bucket and make a reference to the CB Client Configuration
+            JournalCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(JournalSettings.BucketName);
 
             // Throw an exception if we reach this point without a CB Cluster, CB Config, or Bucket
             if (JournalCBCluster == null)
@@ -127,11 +126,10 @@ namespace Akka.Persistence.CouchBase
             }
             else // Instantiate the connection to the new cluster
             {
-                using (SnapShotStoreCBCluster = new Cluster(SnapShotStoreSettings.CBClientConfiguration))
-                {
-                    //Open the bucket and make a reference to the CB Client Configuration
-                    SnapShotStoreCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(SnapShotStoreSettings.BucketName);
-                }
+                SnapShotStoreCBCluster = new Cluster(SnapShotStoreSettings.CBClientConfiguration);
+
+                //Open the bucket and make a reference to the CB Client Configuration
+                SnapShotStoreCBBucket = (CouchbaseBucket)JournalCBCluster.OpenBucket(SnapShotStoreSettings.BucketName);
             }
 
               // Throw an exception if we reach this point without a CB Cluster, CB Config, or Bucket

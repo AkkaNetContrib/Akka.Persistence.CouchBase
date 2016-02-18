@@ -31,6 +31,7 @@ namespace Akka.Persistence.CouchBase
 
             // Reset the serializers and deserializers so that JSON is stored as PascalCase instead of camelCase
             CBClientConfiguration.Serializer = () => new DefaultSerializer(new JsonSerializerSettings(), new JsonSerializerSettings());
+            CBClientConfiguration.Servers.RemoveAt(0);
 
             //Get the URI's from the HOCON config
             try
@@ -43,6 +44,7 @@ namespace Akka.Persistence.CouchBase
                         CBClientConfiguration.Servers.Add(new Uri(s));
                     }
                 }
+
 
             }
             catch (Exception ex)

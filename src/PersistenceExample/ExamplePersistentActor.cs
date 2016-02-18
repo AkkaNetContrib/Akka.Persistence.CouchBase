@@ -94,7 +94,8 @@ namespace PersistenceExample
 
         protected override bool ReceiveCommand(object message)
         {
-            if (message is Command)
+            
+if (message is Command)
             {
                 var cmd = message as Command;
                 Persist(new Event(cmd.Data + "-" + EventsCount), UpdateState);
