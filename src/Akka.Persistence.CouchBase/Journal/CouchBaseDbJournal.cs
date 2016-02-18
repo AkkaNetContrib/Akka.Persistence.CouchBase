@@ -15,7 +15,7 @@ namespace Akka.Persistence.CouchBase.Journal
     /// </summary>
     public class CouchBaseDbJournal : AsyncWriteJournal
     {
-        private CouchbaseBucket _CBBucket;
+        private Couchbase.Core.IBucket _CBBucket;
         
 
         public CouchBaseDbJournal()

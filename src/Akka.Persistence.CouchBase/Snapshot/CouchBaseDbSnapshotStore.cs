@@ -12,7 +12,7 @@ namespace Akka.Persistence.CouchBase.Snapshot
 {
     class CouchBaseDbSnapshotStore:SnapshotStore
     {
-        private CouchbaseBucket _CBBucket;
+        private Couchbase.Core.IBucket _CBBucket;
 
 
         public CouchBaseDbSnapshotStore()
