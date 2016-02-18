@@ -117,7 +117,7 @@ namespace Akka.Persistence.TestKit.Snapshot
                 result.ToSequenceNr == long.MaxValue
                 && result.Snapshot != null
                 && result.Snapshot.Metadata.Equals(Metadata[2])
-                && result.Snapshot.Snapshot.ToString() == "s-3");
+                && result.Snapshot.Snapshot.ToString() == "s-3",TimeSpan.FromMinutes(10));
 
             SnapshotStore.Tell(new LoadSnapshot(Pid, SnapshotSelectionCriteria.Latest, 13), _senderProbe.Ref);
             _senderProbe.ExpectMsg<LoadSnapshotResult>(result =>

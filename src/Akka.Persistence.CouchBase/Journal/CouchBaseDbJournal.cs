@@ -33,13 +33,14 @@ namespace Akka.Persistence.CouchBase.Journal
             var maxValue = max >= int.MaxValue ? int.MaxValue : (int)max;
             var sender = Context.Sender;
 
-            String N1QLQueryString = "SELECT `" + _CBBucket.Name + "`.* FROM `" + _CBBucket.Name + "` WHERE PersistenceId = $PersistenceId AND SequenceNr >= $FromSequenceNr  AND SequenceNr <= $ToSequenceNr ORDER BY SequenceNr ASC";
+            String N1QLQueryString = "SELECT `" + _CBBucket.Name + "`.* FROM `" + _CBBucket.Name + "` WHERE PersistenceId = $PersistenceId AND SequenceNr >= $FromSequenceNr  AND SequenceNr <= $ToSequenceNr ORDER BY SequenceNr ASC LIMIT $Maximum";
 
             IQueryRequest N1QLQueryRequest = new QueryRequest()
             .Statement(N1QLQueryString)
             .AddNamedParameter("PersistenceId", persistenceId)
             .AddNamedParameter("FromSequenceNr", fromSequenceNr)
             .AddNamedParameter("ToSequenceNr", toSequenceNr)
+            .AddNamedParameter("Maximum", maxValue)
             .AdHoc(false);
 
             Couchbase.N1QL.IQueryResult<JournalEntry> result = _CBBucket.Query<JournalEntry>(N1QLQueryRequest);
@@ -85,15 +86,12 @@ namespace Akka.Persistence.CouchBase.Journal
 
         async private Task WriteMessagesTask(IEnumerable<IPersistentRepresentation> messages)
         {
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 foreach (IPersistentRepresentation m in messages)
                 {
                     Document<JournalEntry> jED = ToJournalEntry(m);
-                    Task<IDocumentResult<JournalEntry>> ia = _CBBucket.InsertAsync<JournalEntry>(jED);
-                    IDocumentResult<JournalEntry> dr = await ia;
-                    string test = "Yo: " + dr.ToString();
-
+                    _CBBucket.InsertAsync<JournalEntry>(jED);
                 }
             });
         }

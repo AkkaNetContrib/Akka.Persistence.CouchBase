@@ -24,7 +24,7 @@ namespace Akka.Persistence.CouchBase.Snapshot
         {
 
             // Create a Query with dynamic parameters
-            string N1QLQueryString = "select from `" + _CBBucket.Name + "`.* where DocumentType = 'SnapshotEntry' AND PersistenceId = '$PersistenceId' ";
+            string N1QLQueryString = "select `" + _CBBucket.Name + "`.* from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = '$PersistenceId' ";
 
             long limit=0;
 
