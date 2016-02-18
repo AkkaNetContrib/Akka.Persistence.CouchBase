@@ -12,13 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D645B19F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase", "Akka.Persistence.CouchBase\Akka.Persistence.CouchBase.csproj", "{BE780448-5485-4CD0-8D35-E635916D5E20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget.restoreme", "nuget.restoreme", "{D464B988-D36A-4F28-B40F-E2A1AEEFE61D}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase.Tests", "Akka.Persistence.CouchBase.Tests\Akka.Persistence.CouchBase.Tests.csproj", "{32A2ACBE-8A3C-4093-8C13-D65B113B3327}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.TestKit", "Akka.Persistence.TestKit\Akka.Persistence.TestKit.csproj", "{AD9418B6-C452-4169-94FB-D43DE0BFA966}"
