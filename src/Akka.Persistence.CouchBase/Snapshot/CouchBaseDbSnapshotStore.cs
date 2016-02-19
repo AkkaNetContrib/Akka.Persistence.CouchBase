@@ -24,28 +24,30 @@ namespace Akka.Persistence.CouchBase.Snapshot
         {
 
             // Create a Query with dynamic parameters
-            string N1QLQueryString = "select `" + _CBBucket.Name + "`.* from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = '$PersistenceId' ";
+            string N1QLQueryString = "select `" + _CBBucket.Name + "`.* from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = $PersistenceId ";
 
-            long limit=0;
+            IQueryRequest N1QLQueryRequest = new QueryRequest()
+                    .AddNamedParameter("PersistenceId", persistenceId);
 
+            string N1QLQueryOrderByClauseString = "ORDER BY ";
+            
             if (criteria.MaxSequenceNr > 0 && criteria.MaxSequenceNr < long.MaxValue)
             {
-                N1QLQueryString += "AND SequenceNr <= $limit ORDER BY SequenceNr DESC LIMIT 1";
-                limit = criteria.MaxSequenceNr;
+                N1QLQueryString += "AND SequenceNr <= $limit ";
+                N1QLQueryOrderByClauseString += " SequenceNr DESC,";
+                N1QLQueryRequest.AddNamedParameter("limit",criteria.MaxSequenceNr);
             }
 
             if (criteria.MaxTimeStamp != DateTime.MinValue && criteria.MaxTimeStamp != DateTime.MaxValue)
             {
-                N1QLQueryString += "AND Timestamp <= $limit ORDER BY TimeStamp DESC LIMIT 1";
-                limit = criteria.MaxTimeStamp.Ticks;
-
+                N1QLQueryString += " AND Timestamp <= $timelimit ";
+                N1QLQueryOrderByClauseString += " Timestamp DESC,";
+                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks);
             }
 
-            IQueryRequest N1QLQueryRequest = new QueryRequest()
-                    .Statement(N1QLQueryString)
-                    .AddNamedParameter("PersistenceId", persistenceId)
-                    .AddNamedParameter("limit", limit)
-                    .AdHoc(false);
+            N1QLQueryString += N1QLQueryOrderByClauseString.TrimEnd(',') + " LIMIT 1"; 
+
+            N1QLQueryRequest.Statement(N1QLQueryString).AdHoc(false);
 
             return taskLoadAsync(N1QLQueryRequest);
                 
@@ -54,22 +56,19 @@ namespace Akka.Persistence.CouchBase.Snapshot
 
         private async Task<SelectedSnapshot> taskLoadAsync(IQueryRequest N1QLQueryRequest)
         {
-
-
             Task<IQueryResult<SnapshotEntry>> queryTask = _CBBucket.QueryAsync<SnapshotEntry>(N1QLQueryRequest);
             IQueryResult<SnapshotEntry> result = await queryTask;
             if (result.Rows.Count == 0)
                 throw new Exception("No Snapshots Found");
 
             return ToSelectedSnapshot(result.Rows[0]);
-
         }
 
         private SelectedSnapshot ToSelectedSnapshot(SnapshotEntry entry)
         {
             return
                 new SelectedSnapshot(
-                    new SnapshotMetadata(entry.PersistenceId, entry.SequenceNr, new DateTime(entry.Timestamp)),
+                    new SnapshotMetadata(entry.PersistenceId, entry.SequenceNr, new DateTime(long.Parse(entry.Timestamp))),
                     entry.Snapshot);
         }
 
@@ -82,13 +81,13 @@ namespace Akka.Persistence.CouchBase.Snapshot
         {
             await Task.Run(() =>
             {
-                    Document<SnapshotEntry> SnapshotEntryDocument = ToSnapshotlEntryDocument(snapshot, metadata);
+                    Document<SnapshotEntry> SnapshotEntryDocument = ToSnapshotEntryDocument(snapshot, metadata);
                     _CBBucket.InsertAsync<SnapshotEntry>(SnapshotEntryDocument);
 
             });
         }
 
-        private Document<SnapshotEntry> ToSnapshotlEntryDocument(object snapshot, SnapshotMetadata metadata)
+        private Document<SnapshotEntry> ToSnapshotEntryDocument(object snapshot, SnapshotMetadata metadata)
         {
             return new Document<SnapshotEntry>
             {
@@ -99,7 +98,7 @@ namespace Akka.Persistence.CouchBase.Snapshot
                     PersistenceId = metadata.PersistenceId,
                     SequenceNr = metadata.SequenceNr,
                     Snapshot = snapshot,
-                    Timestamp = metadata.Timestamp.Ticks
+                    Timestamp = metadata.Timestamp.Ticks.ToString()
                 }
             };
         }
@@ -142,37 +141,31 @@ namespace Akka.Persistence.CouchBase.Snapshot
                     .AdHoc(false);
 
             return _CBBucket.QueryAsync<dynamic>(N1QLQueryRequest);
-
-            //Add logger here
         }
 
         protected override Task DeleteAsync(string persistenceId, SnapshotSelectionCriteria criteria)
         {
             string N1QLQueryString = "delete from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry'AND PersistenceId = '$PersistenceId' ";
-            long target = 0;
+
+            IQueryRequest N1QLQueryRequest = new QueryRequest()
+                .AddNamedParameter("PersistenceId", persistenceId);
+
+
             if (criteria.MaxSequenceNr > 0 && criteria.MaxSequenceNr < long.MaxValue)
             {
-                N1QLQueryString += "AND SequenceNr <= $target ORDER BY SequenceNr DESC LIMIT 1";
-                target = criteria.MaxSequenceNr;
+                N1QLQueryString += "AND SequenceNr <= $limit ";
+                N1QLQueryRequest.AddNamedParameter("limit", criteria.MaxSequenceNr);
             }
 
             if (criteria.MaxTimeStamp != DateTime.MinValue && criteria.MaxTimeStamp != DateTime.MaxValue)
             {
-                N1QLQueryString += "AND Timestamp <= $target ORDER BY TimeStamp DESC LIMIT 1";
-                target = criteria.MaxTimeStamp.Ticks;
-
+                N1QLQueryString += " AND Timestamp <= $timelimit ";
+                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks);
             }
 
-            IQueryRequest N1QLQueryRequest = new QueryRequest()
-                    .Statement(N1QLQueryString)
-                    .AddNamedParameter("PersistenceId", persistenceId)
-                    .AddNamedParameter("target", target)
-                    .AdHoc(false);
+            N1QLQueryRequest.Statement(N1QLQueryString).AdHoc(false);
 
             return _CBBucket.QueryAsync<dynamic>(N1QLQueryRequest);
-
-            //Add logger here
-
         }
     }
 }

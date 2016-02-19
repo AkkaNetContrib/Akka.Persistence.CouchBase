@@ -13,7 +13,7 @@ namespace Akka.Persistence.CouchBase.Snapshot
 
         public long SequenceNr { get; set; }
 
-        public long Timestamp { get; set; }
+        public string Timestamp { get; set; }
 
         public object Snapshot { get; set; }
 
