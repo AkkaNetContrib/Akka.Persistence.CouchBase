@@ -46,10 +46,16 @@ Now create the Gloal Secondary indexes with the following commands:
 CREATE INDEX idxDocumentType_PersistenceId_Timestamp on `yourbucket` (PersistenceId,Timestamp,DocumentType) USING GSI
 CREATE INDEX idxDocumentType_PersistenceId on `yourbucket` (DocumentType,PersistenceId) USING GSI
 
+Missing:
+- HOCON Config details
+- app.config details
+- Document Size limit
 
 ## Development Details
-
-
+Add here:
+- How to use plug-in
+- To contribute you need...
+- Future enhancements
 ### Development Tools and Packages
 This plugin was developed using the following:
 - Visual Studio 2013
@@ -63,7 +69,7 @@ This plugin was developed using the following:
 - FAKE build system See http://fsharp.github.io/FAKE/ and a good guide here: http://fsharp.github.io/FAKE/gettingstarted.html
 - CBQ - The CouchBase Query tool will help you during the setup of things http://developer.couchbase.com/documentation/server/4.1/cli/cbq-tool.html
 
-### Background Knowledge Prerequisites
+### Required Knowledge and Where To Get It
 Couchbase:
 - N1QL - Couchbase Structure Query Language
 - Indexes - How to create.
