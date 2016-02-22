@@ -29,20 +29,20 @@ namespace Akka.Persistence.CouchBase.Snapshot
             IQueryRequest N1QLQueryRequest = new QueryRequest()
                     .AddNamedParameter("PersistenceId", persistenceId);
 
-            string N1QLQueryOrderByClauseString = "ORDER BY ";
+            string N1QLQueryOrderByClauseString = "ORDER BY SequenceNr DESC";
             
             if (criteria.MaxSequenceNr > 0 && criteria.MaxSequenceNr < long.MaxValue)
             {
                 N1QLQueryString += "AND SequenceNr <= $limit ";
-                N1QLQueryOrderByClauseString += " SequenceNr DESC,";
+                N1QLQueryOrderByClauseString = "ORDER BY SequenceNr DESC,";
                 N1QLQueryRequest.AddNamedParameter("limit",criteria.MaxSequenceNr);
             }
 
             if (criteria.MaxTimeStamp != DateTime.MinValue && criteria.MaxTimeStamp != DateTime.MaxValue)
             {
                 N1QLQueryString += " AND Timestamp <= $timelimit ";
-                N1QLQueryOrderByClauseString += " Timestamp DESC,";
-                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks);
+                N1QLQueryOrderByClauseString = "ORDER BY Timestamp DESC,";
+                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks.ToString());
             }
 
             N1QLQueryString += N1QLQueryOrderByClauseString.TrimEnd(',') + " LIMIT 1"; 
@@ -82,7 +82,7 @@ namespace Akka.Persistence.CouchBase.Snapshot
             await Task.Run(() =>
             {
                     Document<SnapshotEntry> SnapshotEntryDocument = ToSnapshotEntryDocument(snapshot, metadata);
-                    _CBBucket.InsertAsync<SnapshotEntry>(SnapshotEntryDocument);
+                    _CBBucket.UpsertAsync<SnapshotEntry>(SnapshotEntryDocument);
 
             });
         }
@@ -119,33 +119,35 @@ namespace Akka.Persistence.CouchBase.Snapshot
 
         private Task DeletePermanentlyMessages(SnapshotMetadata metadata)
         {
-            string N1QLQueryString = "delete from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = '$PersistenceId' ";
-            long target=0;
+            string N1QLQueryString = "delete from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = $PersistenceId ";
+
+            IQueryRequest N1QLQueryRequest = new QueryRequest()
+                .AddNamedParameter("PersistenceId", metadata.PersistenceId)
+                .AdHoc(false);
+
+
+
             if (metadata.SequenceNr > 0 && metadata.SequenceNr < long.MaxValue)
             {
-                N1QLQueryString += "AND SequenceNr = $target ORDER BY SequenceNr DESC LIMIT 1";
-                target = metadata.SequenceNr;
+                N1QLQueryString += " AND SequenceNr = $TargetSequenceId";
+                N1QLQueryRequest.AddNamedParameter("TargetSequenceId", metadata.SequenceNr);
+
             }
 
             if (metadata.Timestamp != DateTime.MinValue && metadata.Timestamp != DateTime.MaxValue)
             {
-                N1QLQueryString += "AND Timestamp = $target ORDER BY TimeStamp DESC LIMIT 1";
-                target = metadata.Timestamp.Ticks;
-
+                N1QLQueryString += " AND Timestamp = $TargetTimeStamp";
+                N1QLQueryRequest.AddNamedParameter("TargetTimeStamp", metadata.Timestamp.Ticks.ToString());
             }
 
-            IQueryRequest N1QLQueryRequest = new QueryRequest()
-                    .Statement(N1QLQueryString)
-                    .AddNamedParameter("PersistenceId", metadata.PersistenceId)
-                    .AddNamedParameter("target", target)
-                    .AdHoc(false);
+            N1QLQueryRequest.Statement(N1QLQueryString).AdHoc(false);
 
             return _CBBucket.QueryAsync<dynamic>(N1QLQueryRequest);
         }
 
         protected override Task DeleteAsync(string persistenceId, SnapshotSelectionCriteria criteria)
         {
-            string N1QLQueryString = "delete from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry'AND PersistenceId = '$PersistenceId' ";
+            string N1QLQueryString = "delete from `" + _CBBucket.Name + "` where DocumentType = 'SnapshotEntry' AND PersistenceId = $PersistenceId ";
 
             IQueryRequest N1QLQueryRequest = new QueryRequest()
                 .AddNamedParameter("PersistenceId", persistenceId);
@@ -153,14 +155,14 @@ namespace Akka.Persistence.CouchBase.Snapshot
 
             if (criteria.MaxSequenceNr > 0 && criteria.MaxSequenceNr < long.MaxValue)
             {
-                N1QLQueryString += "AND SequenceNr <= $limit ";
+                N1QLQueryString += " AND SequenceNr <= $limit ";
                 N1QLQueryRequest.AddNamedParameter("limit", criteria.MaxSequenceNr);
             }
 
             if (criteria.MaxTimeStamp != DateTime.MinValue && criteria.MaxTimeStamp != DateTime.MaxValue)
             {
                 N1QLQueryString += " AND Timestamp <= $timelimit ";
-                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks);
+                N1QLQueryRequest.AddNamedParameter("timelimit", criteria.MaxTimeStamp.Ticks.ToString());
             }
 
             N1QLQueryRequest.Statement(N1QLQueryString).AdHoc(false);

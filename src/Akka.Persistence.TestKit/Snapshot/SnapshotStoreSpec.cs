@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
@@ -56,7 +57,9 @@ namespace Akka.Persistence.TestKit.Snapshot
         /// </summary>
         protected IEnumerable<SnapshotMetadata> Initialize()
         {
-            return Metadata = WriteSnapshots().ToList();
+            Metadata = WriteSnapshots().ToList();
+            Thread.Sleep(200);
+            return Metadata ;
         }
 
         private static Config ConfigFromTemplate(Type snapshotStoreType)
@@ -70,7 +73,7 @@ namespace Akka.Persistence.TestKit.Snapshot
             {
                 var metadata = new SnapshotMetadata(Pid, i + 10);
                 SnapshotStore.Tell(new SaveSnapshot(metadata, "s-" + i), _senderProbe.Ref);
-                yield return _senderProbe.ExpectMsg<SaveSnapshotSuccess>().Metadata;
+                yield return _senderProbe.ExpectMsg<SaveSnapshotSuccess>(TimeSpan.FromMinutes(10)).Metadata;
             }
         }
 
@@ -106,7 +109,7 @@ namespace Akka.Persistence.TestKit.Snapshot
                 result.ToSequenceNr == long.MaxValue 
                 && result.Snapshot != null 
                 && result.Snapshot.Metadata.Equals(Metadata[4])
-                && result.Snapshot.Snapshot.ToString() == "s-5");
+                && result.Snapshot.Snapshot.ToString() == "s-5",TimeSpan.FromMinutes(10));
         }
 
         [Fact]
@@ -117,7 +120,7 @@ namespace Akka.Persistence.TestKit.Snapshot
                 result.ToSequenceNr == long.MaxValue
                 && result.Snapshot != null
                 && result.Snapshot.Metadata.Equals(Metadata[2])
-                && result.Snapshot.Snapshot.ToString() == "s-3",TimeSpan.FromMinutes(10));
+                && result.Snapshot.Snapshot.ToString() == "s-3");
 
             SnapshotStore.Tell(new LoadSnapshot(Pid, SnapshotSelectionCriteria.Latest, 13), _senderProbe.Ref);
             _senderProbe.ExpectMsg<LoadSnapshotResult>(result =>

@@ -44,10 +44,6 @@
       <HintPath>..\packages\Akka.Persistence.1.0.6.17-beta\lib\net45\Akka.Persistence.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Persistence.TestKit, Version=1.0.6.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.TestKit.1.0.6.17-beta\lib\net45\Akka.Persistence.TestKit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Akka.TestKit, Version=1.0.6.16, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.TestKit.1.0.6\lib\net45\Akka.TestKit.dll</HintPath>
       <Private>True</Private>
@@ -116,6 +112,9 @@
     <None Include="app.config" />
     <EmbeddedResource Include="reference.conf" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 ﻿using System;
+using System.Threading;
 ﻿using System.Collections.Generic;
 ﻿using System.Linq;
 using Akka.Actor;
@@ -50,6 +51,7 @@ namespace Akka.Persistence.TestKit.Journal
             _senderProbe = CreateTestProbe();
             _receiverProbe = CreateTestProbe();
             return WriteMessages(1, 5, Pid, _senderProbe.Ref);
+
         }
 
         protected JournalSpec(Type journalType, string actorSystemName = null)
@@ -81,7 +83,7 @@ namespace Akka.Persistence.TestKit.Journal
 
             Journal.Tell(new WriteMessages(messages, probe.Ref, ActorInstanceId));
 
-            probe.ExpectMsg<WriteMessagesSuccessful>(TimeSpan.FromMinutes(10));
+            probe.ExpectMsg<WriteMessagesSuccessful>();
             for (int i = from; i <= to; i++)
             {
                 var n = i;
@@ -90,6 +92,7 @@ namespace Akka.Persistence.TestKit.Journal
                         m.Persistent.PersistenceId == Pid);
             }
 
+            Thread.Sleep(200);
             return messages;
         }
 
