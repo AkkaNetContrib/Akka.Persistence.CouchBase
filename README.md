@@ -18,15 +18,16 @@ Unlike other document based databases which have a database which houses multipl
 
 
 ## Operational Requirements and Considerations
-
-To be able to use this plugin you will need:
+In this section I will cover in general terms what needs to be done to use the Akka.Persistence.Couchbase plugin in your code.  I will assume that you have some experience setting projects in Visual Studio and referencing dll's. At a high level To be able to use this plugin you will need:
 - Download this code and compile plugin using Visual Studio 2013 or greater.
+- Reference the plugin dll from the Akka.Persistence project which you wish to use Couchbase as a store.
 - Instal Couchbase 4.1 and create bucket(s).
 - Create Global Secondary Indexes (To increase lookup performance).
 - Create either [HOCON](http://getakka.net/docs/concepts/configuration) or in your app.config file the configuration to connect to Couchbase (details below).
 - Abide by the document limitations (more on this below).
+- Start using the plugin as described in [this article]( https://petabridge.com/blog/intro-to-persistent-actors/).
 
-We selected Couchbase 4.1 primarily because of N1QL.  Performing all CRUD operations is simple and familiar to many programmers due to its similarity to SQL.  That does not mean that this plug-in can also be developed using the clasical Couchbase operators to perform CRUD operations.  Adding this functionality can easily be done and it will allow for legacy Couchbase users (Couchbase < V4.1) to take advantage of the Akka.Persistence layer. To inquire please reach us at www.CoralFire.com
+We, at CoralFire, selected Couchbase 4.1 primarily because of N1QL.  Performing all CRUD operations is simple and familiar to many programmers due to its similarity to SQL.  That does not mean that this plug-in can also be developed using the clasical Couchbase operators to perform CRUD operations.  Adding this functionality can easily be done and it will allow for legacy Couchbase users (Couchbase < V4.1) to take advantage of the Akka.Persistence layer. To inquire please reach us at www.CoralFire.com
 
 To use the plugin you need to take the following general steps:
 1. Download Couchbase and CBQ from here: [Couchbase Downloads](http://www.couchbase.com/nosql-databases/downloads)
@@ -46,6 +47,10 @@ Now create the Gloal Secondary indexes with the following commands:
 CREATE INDEX idxDocumentType_PersistenceId_Timestamp on `yourbucket` (PersistenceId,Timestamp,DocumentType) USING GSI
 CREATE INDEX idxDocumentType_PersistenceId on `yourbucket` (DocumentType,PersistenceId) USING GSI
 
+Once the indexes are created now you need to configure your application.  There are two possible ways you can pass the Couchbase configuration to the plugin.  The first way is via Akka's HOCON configuration exclusively.  The other way is using a combination of HOCON and a Couchbase app.config section.  Let's start looking at the exclusive HOCON configuration first.
+
+### Exclusive HOCON Configuration
+To configure Akka.Persistence to access to use the Akka
 Missing:
 - HOCON Config details
 - app.config details
