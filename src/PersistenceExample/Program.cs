@@ -9,7 +9,7 @@ using System;
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.Persistence;
-using Akka.Persistence.SqlServer;
+using Akka.Persistence.CouchBase;
 
 namespace PersistenceExample
 {
@@ -142,7 +142,7 @@ namespace PersistenceExample
 
             // all commands are stacked in internal actor's state as a list
             aref.Tell(new Command("foo"));
-            Console.ReadLine();
+            Console.ReadLine(); 
 
             aref.Tell(new Command("baz"));
             aref.Tell(new Command("bar"));
