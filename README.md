@@ -126,6 +126,9 @@ If the plugin does not find the ClusterHelper it will error out and fail.
 ### Document Size Limitations
 Couchbase allows you to store documents up-to 20MB.  Documents larger than this limit will generate a failure.  This particularly important when deciding how much state data to store in your snapshots. You have been warned!
 
+### Sample Persistence Project
+I have included a preconfigured sample persistence project(See under src folder [PersistenceExample](https://github.com/ilhadad/Akka.Persistence.CouchBase/tree/master/src/PersistenceExample)) so that users can see how to use the Couchbase persistence layer.  This project was developed by the folks in Akka.net and we are grateful for providing this sample project.
+
 ## Development Findings
 I am writing a few notes on a few things to consider if you choose to contribute or decide to create a plugin such as this.
 
@@ -162,8 +165,3 @@ Akka.Net:
 - To get a basic understanding on how to put a plugin together see http://bartoszsypytkowski.com/create-your-own-akka-net-persistence-plugin/
 GIT:
 - This is how we work: https://petabridge.com/blog/github-workflow/
-
-
-
-
-

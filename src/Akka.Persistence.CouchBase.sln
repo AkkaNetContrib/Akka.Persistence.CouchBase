@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.CouchBase.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Persistence.TestKit", "Akka.Persistence.TestKit\Akka.Persistence.TestKit.csproj", "{AD9418B6-C452-4169-94FB-D43DE0BFA966}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistenceExample", "PersistenceExample\PersistenceExample.csproj", "{4022147A-4F95-4A04-BE09-01B7952BBDD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD9418B6-C452-4169-94FB-D43DE0BFA966}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4022147A-4F95-4A04-BE09-01B7952BBDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4022147A-4F95-4A04-BE09-01B7952BBDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4022147A-4F95-4A04-BE09-01B7952BBDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4022147A-4F95-4A04-BE09-01B7952BBDD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
