@@ -29,7 +29,7 @@ namespace PersistenceExample
 
                 //SnapshotedActor(system);
 
-                //ViewExample(system);
+                ViewExample(system);
 
                 AtLeastOnceDelivery(system);
 

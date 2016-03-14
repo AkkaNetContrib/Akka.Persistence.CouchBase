@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Persistence;
+using Newtonsoft.Json.Linq;
 
 namespace PersistenceExample
 {
@@ -83,11 +84,17 @@ namespace PersistenceExample
 
         protected override bool ReceiveRecover(object message)
         {
-            ExampleState state;
-            if (message is Event)
-                UpdateState(message as Event);
-            else if (message is SnapshotOffer && (state = ((SnapshotOffer) message).Snapshot as ExampleState) != null)
-                State = state;
+            if (message is JObject)
+            {
+                UpdateState(((JObject)message).ToObject<Event>());
+
+            }
+            else if (message is SnapshotOffer )
+            {
+                SnapshotOffer so = (SnapshotOffer) message;
+                Newtonsoft.Json.Linq.JObject jo = (Newtonsoft.Json.Linq.JObject)so.Snapshot;
+                State = jo.ToObject<ExampleState>();
+            }
             else return false;
             return true;
         }
@@ -95,7 +102,7 @@ namespace PersistenceExample
         protected override bool ReceiveCommand(object message)
         {
             
-if (message is Command)
+            if (message is Command)
             {
                 var cmd = message as Command;
                 Persist(new Event(cmd.Data + "-" + EventsCount), UpdateState);
